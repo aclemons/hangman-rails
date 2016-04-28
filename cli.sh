@@ -118,7 +118,7 @@ num="$(awk -v min=1 -v max="$max" 'BEGIN{ srand(); print int(min + rand() * (max
 word="$(sed "$(printf "%s" "$num")q;d" "$DICTFILE")"
 
 gameurl="$(curl -f -v -H "Accept: application/json" "$URL/games" --data game[lives]=7 --data game[word]="$word" -o /dev/null 2>&1 | tr -d '\r' | grep ocation | cut -d' ' -f3)"
-game_id="$(echo "$gameurl" | sed 's#.*/\([[:digit:]]\+\)#\1#')"
+game_id="$(echo "$gameurl" | sed 's#.*/\([[:digit:]][[:digit:]]*\)#\1#')"
 
 error=""
 # shellcheck disable=SC2159
@@ -161,7 +161,8 @@ while [ 0 ] ; do
 
   echo "You have $CLBLUE$lives$CLRESET lives left"
 
-  echo "$word" | sed -e 's/\(.\)/\1\n/g' | while read -r letter ; do
+  echo "$word" | sed -e 's/\(.\)/\1\
+/g' | while read -r letter ; do
     upletter="$(echo "$letter" | tr '[:lower:]' '[:upper:]')"
     if echo "$letters" | grep "$upletter" > /dev/null 2>&1 ; then
       printf "%s" "$letter "
