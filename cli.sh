@@ -44,7 +44,7 @@ Examples
   ./cli.sh --url http://10.43.0.13:3000 --dict-file /tmp/words
 
 Requirements:
-poxis compliant sh
+posix compliant sh
 sed
 awk
 curl
