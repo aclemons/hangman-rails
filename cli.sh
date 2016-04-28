@@ -45,9 +45,10 @@ Examples
 
 Requirements:
 posix compliant sh
-sed
 awk
+sed
 curl
+yajl
 
 EOF
 }
