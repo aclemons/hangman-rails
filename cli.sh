@@ -20,7 +20,6 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 # Simple cli interface to a rails hangman instance running somewhere
-# This requires a posix complient sh, awk, sed, yajl
 
 set -e
 
