@@ -193,7 +193,7 @@ while [ 0 ] ; do
 
   response="$(curl -v -H "Accept: application/json" "$URL/guesses" --data "game_id=$game_id" --data "guess[letter]=$letter" 2> /dev/null | tr -d '\r')"
 
-  if echo "$response" | grep "HTTP/1.1 201 Created" ; then
+  if echo "$response" | grep "HTTP/1.1 201 Created" > /dev/null 2>&1 ; then
     continue
   fi
 
