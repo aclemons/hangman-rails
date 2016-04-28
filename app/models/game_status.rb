@@ -31,7 +31,7 @@ class GameStatus < ActiveRecord::Base
 
   def game_status_is_valid
     if id < STATUS_NEW or id > STATUS_WON
-      errors.add(:id, I18n.t('INVALID_GAME_STATUS_ID', valid_range: "0-3"))
+      errors.add(:id, I18n.t('INVALID_GAME_STATUS_ID', valid_range: "#{STATUS_NEW}-#{STATUS_WON}"))
     end
   end
 
