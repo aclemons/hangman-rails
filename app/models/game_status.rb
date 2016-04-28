@@ -19,6 +19,8 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 class GameStatus < ActiveRecord::Base
+  self.primary_key = "id"
+
   STATUS_NEW = 0
   STATUS_IN_PROGRESS = 1
   STATUS_LOST = 2
