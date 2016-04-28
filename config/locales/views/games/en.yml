@@ -1,0 +1,25 @@
+---
+en:
+  GAME_TITLE: Game
+  GUESS_BUTTON: Guess
+  WON_GAME_TEXT_html: You win! Word was <b>%{word}</b>
+  LOST_GAME_TEXT_html: Game over! Word was <b>%{word}</b>
+  USED_LETTERS: Used Letters
+  LIVES_LEFT_html:
+    one: You have one life left
+    other: You have %{count} lives left
+  ALL_GAMES: All Games
+  ALL_GAMES_TITLE: All Games
+  CREATE_GAME_TITLE: Create Game
+  SAVE_GAME_BUTTON: Save
+  CREATE_GAME: Create Game
+  STATUS_0: New
+  STATUS_1: In Progress
+  STATUS_2: Lost
+  STATUS_3: Won
+  OVERVIEW_GAME_ID: Game ID
+  OVERVIEW_GAME_STATUS: Status
+  OVERVIEW_GAME_LIVES_REMAINING: Lives Remaining
+  OVERVIEW_GAME_LINK: Action
+  SHOW_GAME_LINK: View
+  RESUME_GAME_LINK: Resume

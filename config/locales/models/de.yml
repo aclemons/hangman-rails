@@ -1,0 +1,16 @@
+---
+de:
+  activerecord:
+    models:
+      game:
+        one: Spiel
+        other: Spiele
+    attributes:
+      game:
+        word: "Wort"
+        lives: "Leben"
+      guess:
+        letter:
+          one: "Buchstabe"
+          other: "Buchstaben"
+  INVALID_GAME_STATUS_ID: Ungültige Id für den Spielstatus. Muss zwischen %{valid_range} liegen.

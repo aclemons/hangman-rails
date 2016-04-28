@@ -1,0 +1,6 @@
+<%= form_for(@game.guesses.build) do |f| %>
+  <div>
+    <%= hidden_field_tag :game_id, @game.id %><%= f.label :letter %><%= f.text_field :letter, class: 'form-control', autofocus: true %>
+  </div>
+  <%= f.submit yield(:button_text), class: "btn btn-primary" %>
+<% end %>

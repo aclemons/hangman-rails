@@ -1,0 +1,12 @@
+<header class="navbar navbar-fixed-top navbar-inverse">
+  <div class="container">
+    <%= link_to t("HANGMAN"), root_path, id: "logo" %>
+    <nav>
+      <ul class="nav navbar-nav navbar-right">
+        <li><%= link_to t("HOME_LINK"), root_path %></li>
+        <li><%= link_to t("HISTORY_LINK"), games_path %></li>
+        <li><%= link_to t("HELP_LINK"), help_path %></li>
+      </ul>
+    </nav>
+  </div>
+</header>

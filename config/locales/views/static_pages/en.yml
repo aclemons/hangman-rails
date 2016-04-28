@@ -1,0 +1,9 @@
+---
+en:
+  HOME_TITLE: Home
+  HOME_HEADING: Welcome to Hangman
+  HOME_PLAY_NOW: Create Game
+
+  HELP_TITLE: Help
+  HELP_HEADING: Help
+  HELP_TEXT_html: Background information on hangman can be found at the <a href="https://en.wikipedia.org/wiki/Hangman_(game)">Hangman Wikipedia article.</a>

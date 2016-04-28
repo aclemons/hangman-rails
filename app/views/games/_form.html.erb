@@ -1,0 +1,11 @@
+<%= form_for(@game) do |f| %>
+  <%= render 'shared/error_messages', object: @game %>
+
+  <%= f.label :word %>
+  <%= f.text_field :word, class: 'form-control' %>
+
+  <%= f.label :lives %>
+  <%= f.number_field :lives, class: 'form-control' %>
+
+  <%= f.submit yield(:button_text), class: "btn btn-primary" %>
+<% end %>

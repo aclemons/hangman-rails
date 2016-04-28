@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# seed data into the server
+
+COUNT="$1"
+COUNT=${COUNT:-500}
+
+ALL_NON_RANDOM_WORDS=/usr/share/dict/words
+ALL_NON_RANDOM_WORDS_COUNT="$(wc -l < $ALL_NON_RANDOM_WORDS)"
+
+IDX=0
+while [ "$IDX" -lt "$COUNT" ] ; do
+  RANDOM_NUMBER="$(od -N3 -An -i /dev/urandom | awk -v f=0 -v r="$ALL_NON_RANDOM_WORDS_COUNT" '{printf "%i\n", f + r * $1 / 16777216}')"
+  sed "$(echo "$RANDOM_NUMBER")q;d" "$ALL_NON_RANDOM_WORDS"
+  IDX=$((IDX + 1))
+done
+

@@ -1,0 +1,22 @@
+<div class="panel panel-default">
+  <pre class="panel-body">
+    <% if @game.won? %>
+<%= t("WON_GAME_TEXT_html", { :word => @game.word }) %>
+    <% elsif @game.lost? %>
+<%= t("LOST_GAME_TEXT_html", { :word => @game.word }) %>
+    <% else %>
+<%= t("LIVES_LEFT_html", { :count => @game.lives_left }) %>:
+
+<%= @game.solved_char_status.each_with_index.map { |status, index| status ? @game.word[index] : "_" }.join(" ") %>
+    <% end %>
+
+<%= t("USED_LETTERS") %>:
+[ <%= @game.guesses.map(&:letter).join(" ") %> ]
+  </pre>
+
+  <div class="panel-footer">
+    <% if !@game.game_over? %>
+      <%= render 'guess' %>
+    <% end %>
+  </div>
+</div>

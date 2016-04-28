@@ -1,0 +1,16 @@
+---
+en:
+  activerecord:
+    models:
+      game:
+        one: Game
+        other: Games
+    attributes:
+      game:
+        word: "Word"
+        lives: "Lives"
+      guess:
+        letter:
+          one: "Letter"
+          other: "Letters"
+  INVALID_GAME_STATUS_ID: Invalid game status id. Must be %{valid_range}

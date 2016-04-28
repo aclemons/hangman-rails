@@ -1,0 +1,17 @@
+---
+en:
+  activemodel:
+    attributes:
+      make_guess:
+        letter:
+          one: "Letter"
+          other: "Letters"
+        state:
+          one: "State"
+          other: "States"
+        game:
+          one: "Game"
+          other: "Games"
+  UNKNOWN_GAME: "Invalid game id: %{game_id}"
+  GAME_ALREADY_OVER: "Game %{game_id} is already finished"
+  LETTER_ALREADY_USED: "Letter '%{letter}' has already been used"

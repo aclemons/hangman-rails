@@ -1,0 +1,23 @@
+---
+de:
+  GAME_TITLE: Spiel
+  GUESS_BUTTON: Raten
+  WON_GAME_TEXT_html: "Glückwünsch! Sie haben gewonnen. Das Wort war <b>%{word}</b>"
+  LOST_GAME_TEXT_html: "Sie haben leider verloren! Das Wort war <b>%{word}</b>"
+  USED_LETTERS: verbrauchte Buchstaben
+  LIVES_LEFT_html: Sie haben noch %{count} Leben übrig
+  ALL_GAMES: Spiele
+  ALL_GAMES_TITLE: Spiele
+  CREATE_GAME_TITLE: Spiel anlegen
+  SAVE_GAME_BUTTON: Speichern
+  CREATE_GAME: Spiel Anlegen
+  STATUS_0: Neu
+  STATUS_1: Läuft
+  STATUS_2: Verloren
+  STATUS_3: Gewonnen
+  OVERVIEW_GAME_ID: Spiel-ID
+  OVERVIEW_GAME_STATUS: Status
+  OVERVIEW_GAME_LIVES_REMAINING: Leben übrig
+  OVERVIEW_GAME_LINK: Aktion
+  SHOW_GAME_LINK: Ansehen
+  RESUME_GAME_LINK: Weiterspielen

@@ -1,0 +1,17 @@
+---
+de:
+  activemodel:
+    attributes:
+      make_guess:
+        letter:
+          one: "Buchstabe"
+          other: "Buchstaben"
+        state:
+          one: "Status"
+          other: "Status"
+        game:
+          one: "Spiel"
+          other: "Spiele"
+  UNKNOWN_GAME: "Ungültige Spiel-Id: %{game_id}"
+  GAME_ALREADY_OVER: "Spiel %{game_id} ist schon beendet"
+  LETTER_ALREADY_USED: "Buchstabe '%{letter}' wurde schon verwendet"
