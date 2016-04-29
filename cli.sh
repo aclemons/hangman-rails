@@ -141,9 +141,9 @@ while [ 0 ]; do
   fi
 done
 
-if echo "{}" | python -c 'import sys, json;' > /dev/null 2>&1 ; then
+if python -c 'import sys, json;' > /dev/null 2>&1 ; then
   jsonpp='python -c "import sys, json; data = sys.stdin.read(); print json.dumps(json.loads(data), sort_keys=True, indent=4, separators=('\'','\'', '\'': '\''))"'
-elif echo "{}" | perl -0007 -MJSON -ne 'from_json($_, {allow_nonref => 1})' > /dev/null 2>&1 ; then
+elif perl -0007 -MJSON -e '' > /dev/null 2>&1 ; then
   # shellcheck disable=SC2016
   jsonpp='perl -0007 -MJSON -ne '\''print to_json(from_json($_, {allow_nonref => 1}), {pretty => 1})."\n"'\'''
 elif command -v json_reformat > /dev/null 2>&1 ; then
