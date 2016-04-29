@@ -20,11 +20,11 @@
 #
 class GamesController < ApplicationController
   def index
-    if params[:game_status_id]
-      @games = Game.with_status(params[:game_status_id]).paginate(page: params[:page]).order('created_at ASC')
-    else
-      @games = Game.paginate(page: params[:page]).order('created_at ASC')
+    @games = Game.where(nil)
+    filtering_params.each do |key, value|
+      @games = @games.public_send("with_#{key}", value) if value.present?
     end
+    @games = @games.paginate(page: params[:page]).order('created_at ASC')
 
     respond_to do |format|
       format.html
@@ -65,6 +65,10 @@ class GamesController < ApplicationController
 
     def user_params
       params.require(:game).permit(:lives, :word)
+    end
+
+    def filtering_params
+      params.slice(:game_status_id)
     end
 
 end

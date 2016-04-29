@@ -20,7 +20,7 @@
 #
 class Game < ActiveRecord::Base
 
-  scope :with_status, -> (status) { where game_status_id: status }
+  scope :with_game_status_id, -> (status) { where game_status_id: status }
 
   before_save { self.game_status_id = GameStatus::STATUS_NEW unless self.game_status_id }
   validates :word, presence: true, length: { minimum: 3, maximum: 50 }
