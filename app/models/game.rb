@@ -19,6 +19,9 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 class Game < ActiveRecord::Base
+
+  scope :with_status, -> (status) { where game_status_id: status }
+
   before_save { self.game_status_id = GameStatus::STATUS_NEW unless self.game_status_id }
   validates :word, presence: true, length: { minimum: 3, maximum: 50 }
   validates :lives, presence: true, :numericality => { :greater_than_or_equal_to => 1 }

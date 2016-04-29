@@ -20,7 +20,11 @@
 #
 class GamesController < ApplicationController
   def index
-    @games = Game.paginate(page: params[:page]).order('created_at ASC')
+    if params[:game_status_id]
+      @games = Game.with_status(params[:game_status_id]).paginate(page: params[:page]).order('created_at ASC')
+    else
+      @games = Game.paginate(page: params[:page]).order('created_at ASC')
+    end
 
     respond_to do |format|
       format.html
