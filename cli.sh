@@ -185,8 +185,17 @@ read -r ignored
 if [ "x$RESUME" = "x" ] ; then
 
   max="$(wc -l < "$DICTFILE")"
-  num="$(awk -v min=1 -v max="$max" 'BEGIN{ srand(); print int(min + rand() * (max - min + 1)) }')"
-  word="$(sed "$(printf "%s" "$num")q;d" "$DICTFILE")"
+
+  # shellcheck disable=SC2159
+  while [ 0 ] ; do
+    num="$(awk -v min=1 -v max="$max" 'BEGIN{ srand(); print int(min + rand() * (max - min + 1)) }')"
+    word="$(sed "$(printf "%s" "$num")q;d" "$DICTFILE")"
+    wlength="$(printf "%s" "$word" | wc -m)"
+
+    if [ "$wlength" -ge 3 ] || [ "$wlength" -le 50 ] ; then
+      break
+    fi
+  done
 
   gameurl="$(curl -f -v -H "Accept: application/json" "$URL/games" --data game[lives]=7 --data game[word]="$word" -o /dev/null 2>&1 | tr -d '\r' | grep ocation | cut -d' ' -f3)"
   gameid="$(echo "$gameurl" | sed 's#.*/\([[:digit:]][[:digit:]]*\)#\1#')"
