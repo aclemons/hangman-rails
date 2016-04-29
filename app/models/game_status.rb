@@ -26,13 +26,6 @@ class GameStatus < ActiveRecord::Base
   STATUS_LOST = 2
   STATUS_WON = 3
 
-  validates :id, numericality: { only_integer: true }
-  validate :game_status_is_valid
-
-  def game_status_is_valid
-    if id < STATUS_NEW or id > STATUS_WON
-      errors.add(:id, I18n.t('INVALID_GAME_STATUS_ID', valid_range: "#{STATUS_NEW}-#{STATUS_WON}"))
-    end
-  end
+  validates :id, numericality: { only_integer: true, :greater_than_or_equal_to => STATUS_NEW, :less_than_or_equal_to => STATUS_WON }
 
 end
