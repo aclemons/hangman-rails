@@ -41,6 +41,7 @@ Options mirror the environment variables above:
   --url       - same as URL
   --resume    - same as RESUME
   --verbose   - same as VERBOSE=yes
+  --no-colour - disable colours
 
 Examples
   URL=http://10.43.0.13:3000 ./cli.sh
@@ -64,6 +65,12 @@ Exit codes:
 
 EOF
 }
+
+CLRED=$(printf '\033[31m')
+CLGREEN=$(printf '\033[32m')
+CLBLUE=$(printf '\033[34m')
+CLMAGENTA=$(printf '\033[35m')
+CLRESET=$(printf '\033[0m')
 
 # shellcheck disable=SC2159
 while [ 0 ]; do
@@ -117,6 +124,14 @@ while [ 0 ]; do
     shift
 
     VERBOSE="yes"
+  elif [ "x$1" = "x--no-colour" ] || [ "x$1" = "x--no-color" ] ; then
+    shift
+
+    CLRED=""
+    CLGREEN=""
+    CLBLUE=""
+    CLMAGENTA=""
+    CLRESET=""
 
   elif [ "x$1" = "x" ]; then
     break
@@ -126,7 +141,6 @@ while [ 0 ]; do
   fi
 done
 
-jsonpp=""
 if echo "{}" | python -c 'import sys, json;' > /dev/null 2>&1 ; then
   jsonpp='python -c "import sys, json; data = sys.stdin.read(); print json.dumps(json.loads(data), sort_keys=True, indent=4, separators=('\'','\'', '\'': '\''))"'
 elif echo "{}" | perl -0007 -MJSON -ne 'from_json($_, {allow_nonref => 1})' > /dev/null 2>&1 ; then
@@ -138,12 +152,6 @@ else
   echo >&2 "This script requires yajl, python, or perl-JSON (to pretty-print json) to run."
   exit 2
 fi
-
-CLRED=$(printf '\033[31m')
-CLGREEN=$(printf '\033[32m')
-CLBLUE=$(printf '\033[34m')
-CLMAGENTA=$(printf '\033[35m')
-CLRESET=$(printf '\033[0m')
 
 VERBOSE=${VERBOSE:-no}
 
@@ -224,7 +232,7 @@ while [ 0 ] ; do
     letters="$(echo "$data" | sed '1,/guesses/d' | sed '/]/,$d' | grep -v '^$' | sed -e 's/^[ \t]*//' -e 's/,//g' -e 's/"//g')"
   fi
 
-  guessed_letters="[ $(printf "%s" "$letters" | tr '\n' ' ') ]"
+  guessed_letters="[ $(printf "%s" "$CLMAGENTA$letters$CLRESET" | tr '\n' ' ') ]"
 
   if [ "$gstatus" -eq 2 ] ; then
     echo "Game: $gameid"
@@ -263,7 +271,7 @@ while [ 0 ] ; do
 /g' | while read -r letter ; do
     upletter="$(echo "$letter" | tr '[:lower:]' '[:upper:]')"
     if echo "$letters" | grep "$upletter" > /dev/null 2>&1 ; then
-      printf "%s" "$letter "
+      printf "%s" "$CLGREEN$letter$CLRESET "
     else
       printf "_ "
     fi
