@@ -166,6 +166,7 @@ fi
 
 echo ""
 echo "Press enter to continue"
+# shellcheck disable=SC2034
 read -r ignored
 
 if [ "x$RESUME" = "x" ] ; then
