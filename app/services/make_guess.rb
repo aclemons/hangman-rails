@@ -35,40 +35,34 @@ class MakeGuess
         @game = Game.find_by(id: game_id)
 
         if !game
-          self.errors.add(MakeGuess.human_attribute_name(:game), I18n.t("UNKNOWN_GAME", { :game_id => game_id.to_s }))
+          errors.add(MakeGuess.human_attribute_name(:game), I18n.t("UNKNOWN_GAME", { :game_id => game_id.to_s }))
           raise ActiveRecord::Rollback
         end
 
         if game.game_over?
-          self.errors.add(MakeGuess.human_attribute_name(:state), I18n.t("GAME_ALREADY_OVER", { :game_id => game_id.to_s }))
+          errors.add(MakeGuess.human_attribute_name(:state), I18n.t("GAME_ALREADY_OVER", { :game_id => game_id.to_s }))
           raise ActiveRecord::Rollback
         end
 
         @guess = game.guesses.create(letter: letter)
 
         if !guess.valid?
-          guess.errors.each { |attribute, error| self.errors.add(attribute, error) }
+          guess.errors.each { |attribute, error| errors.add(attribute, error) }
 
           raise ActiveRecord::Rollback
         end
 
-        game.game_status_id = if game.won?
-                                GameStatus::STATUS_WON
-                              elsif game.lost?
-                                GameStatus::STATUS_LOST
-                              else
-                                GameStatus::STATUS_IN_PROGRESS
-                              end
+        game.update_game_status!
 
         if !game.save
-          game.errors.each { |attribute, error| self.errors.add(attribute, error) }
+          game.errors.each { |attribute, error| errors.add(attribute, error) }
           raise ActiveRecord::Rollback
         end
 
         return true
       end
     rescue ActiveRecord::RecordNotUnique => e
-      self.errors.add(MakeGuess.human_attribute_name(:letter), I18n.t("LETTER_ALREADY_USED", { :letter => letter.to_s }))
+      errors.add(MakeGuess.human_attribute_name(:letter), I18n.t("LETTER_ALREADY_USED", { :letter => letter.to_s }))
     end
 
     return false

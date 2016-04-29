@@ -32,7 +32,7 @@ class Game < ActiveRecord::Base
   end
 
   def won?
-    !solved_char_status.include? false
+    solved_char_status.all?
   end
 
   def solved_char_status
@@ -43,15 +43,25 @@ class Game < ActiveRecord::Base
   end
 
   def lost?
-    lives - wrong_guess_count <= 0
+    lives_left <= 0
   end
 
   def wrong_guess_count
     chars = word.upcase.chars
-    guesses.inject(0) { |count, guess| chars.index(guess.letter) ? count : count + 1 }
+    guesses.reject { |guess| chars.include?(guess.letter) }.count
   end
 
   def lives_left
     lives - wrong_guess_count
+  end
+
+  def update_game_status!
+    self.game_status_id = if won?
+                       GameStatus::STATUS_WON
+                     elsif lost?
+                       GameStatus::STATUS_LOST
+                     else
+                       GameStatus::STATUS_IN_PROGRESS
+                     end
   end
 end
