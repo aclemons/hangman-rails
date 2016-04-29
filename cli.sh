@@ -47,7 +47,15 @@ posix compliant sh
 awk
 sed
 curl
-yajl
+python - first choice for pretty printing json
+perl-JSON - fallback if python cannot be used to pretty print json
+yajl - fallback  if neither python or perl-JSON are available to pretty-print json (json_reformat)
+
+Exit codes:
+0 - Won
+1 - Invalid arguments
+2 - Missing dependencies
+3 - Lost
 
 EOF
 }
@@ -87,14 +95,21 @@ while [ 0 ]; do
   elif [ "x$1" = "x" ]; then
     break
   else
-    echo "Unknown token $1"
+    echo >&2 "Unknown token $1"
     exit 1
   fi
 done
 
-if ! command -v json_reformat > /dev/null 2>&1 ; then
-  echo >&2 "This script requires yajl to run."
-  exit 1
+jsonpp=""
+if echo "{}" | python -c 'import sys, json;' > /dev/null 2>&1 ; then
+  jsonpp='python -c "import sys, json; data = sys.stdin.read(); print json.dumps(json.loads(data), sort_keys=True, indent=4, separators=('\'','\'', '\'': '\''))"'
+elif echo "{}" | perl -0007 -MJSON -ne 'from_json($_, {allow_nonref => 1})' > /dev/null 2>&1 ; then
+  jsonpp='perl -0007 -MJSON -ne '\''print to_json(from_json($_, {allow_nonref => 1}), {pretty => 1})."\n"'\'''
+elif command -v json_reformat > /dev/null 2>&1 ; then
+  jsonpp="json_reformat"
+else
+  echo >&2 "This script requires yajl, python, or perl-JSON (to pretty-print json) to run."
+  exit 2
 fi
 
 CLRED=$(printf '\033[31m')
@@ -106,8 +121,8 @@ CLRESET=$(printf '\033[0m')
 DICTFILE=${DICTFILE:-/usr/share/dict/words}
 
 if [ ! -e "$DICTFILE" ] ; then
-  echo "File $DICTFILE does not exist"
-  exit 2
+  echo >&2 "File $DICTFILE does not exist"
+  exit 1
 fi
 
 URL=${URL:-http://localhost:3000}
@@ -125,10 +140,17 @@ while [ 0 ] ; do
 
   printf "\033[2J\033[1;1H"
 
-  data="$(curl -s -H "Accept: application/json" "$gameurl" | tr -d '\r' | json_reformat)"
+  data="$(curl -s -H "Accept: application/json" "$gameurl" | tr -d '\r' | eval $jsonpp | sed 's/ : /: /')"
   lives="$(echo "$data" | grep "lives_remaining" | sed -e 's/^[ \t]*//' -e 's/,//g' | cut -d' ' -f2)"
   gstatus="$(echo "$data" | grep "status" | sed -e 's/^[ \t]*//' -e 's/,//g' | cut -d' ' -f2)"
-  letters="$(echo "$data" | sed '1,/guesses/d' | sed '/]/,$d' | grep -v '^$' | sed -e 's/^[ \t]*//' -e 's/,//g' -e 's/"//g')"
+
+  # python and perl-JSON will format a blank array like this
+  if echo "$data" | grep '"guesses": \[\]' > /dev/null 2>&1 ; then
+    letters=""
+  else
+    letters="$(echo "$data" | sed '1,/guesses/d' | sed '/]/,$d' | grep -v '^$' | sed -e 's/^[ \t]*//' -e 's/,//g' -e 's/"//g')"
+  fi
+
   guessed_letters="[ $(printf "%s" "$letters" | tr '\n' ' ') ]"
 
   if [ "$gstatus" -eq 2 ] ; then
@@ -137,7 +159,7 @@ while [ 0 ] ; do
     echo ""
     echo "Used Letters"
     echo "$guessed_letters"
-    exit 2
+    exit 3
   fi
 
   if [ "$gstatus" -eq 3 ] ; then
