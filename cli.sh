@@ -34,11 +34,13 @@ Environment variables affect how the script runs:
   DICTFILE - dictionary file containing words - default /usr/share/dict/words
   URL      - url of the remote server - default http://localhost:3000
   RESUME   - id of the game to resume
+  VERBOSE  - verbose output on start
 
 Options mirror the environment variables above:
   --dict-file - same as DICTFILE
   --url       - same as URL
   --resume    - same as RESUME
+  --verbose   - same as VERBOSE=yes
 
 Examples
   URL=http://10.43.0.13:3000 ./cli.sh
@@ -111,6 +113,11 @@ while [ 0 ]; do
     fi
 
     shift
+  elif [ "x$1" = "x--verbose" ]; then
+    shift
+
+    VERBOSE="yes"
+
   elif [ "x$1" = "x" ]; then
     break
   else
@@ -138,18 +145,9 @@ CLBLUE=$(printf '\033[34m')
 CLMAGENTA=$(printf '\033[35m')
 CLRESET=$(printf '\033[0m')
 
+VERBOSE=${VERBOSE:-no}
+
 URL=${URL:-http://localhost:3000}
-
-echo "Welcome to $CLBLUE""HANGMAN$CLRESET"
-echo ""
-
-if command -v ddate > /dev/null 2>&1 ; then
-  echo "Date: $CLBLUE$(ddate)$CLRESET"
-else
-  echo "Date: $CLBLUE$(date)$CLRESET"
-fi
-
-echo "Pretty-printing json with: $CLGREEN$jsonpp$CLRESET"
 
 if [ "x$RESUME" = "x" ] ; then
   DICTFILE=${DICTFILE:-/usr/share/dict/words}
@@ -158,10 +156,25 @@ if [ "x$RESUME" = "x" ] ; then
     echo >&2 "File $DICTFILE does not exist"
     exit 1
   fi
+fi
 
-  echo "Target server $CLMAGENTA$URL$CLRESET, sourcing words from $CLMAGENTA$DICTFILE$CLRESET"
-else
-  echo "Target server $CLMAGENTA$URL$CLRESET, resuming game $CLBLUE$RESUME$CLRESET"
+echo "Welcome to $CLBLUE""HANGMAN$CLRESET"
+echo ""
+
+if [ "x$VERBOSE" = "xyes" ] || [ "x$VERBOSE" = "xtrue" ] || [ "x$VERBOSE" = "x1" ] ; then
+  if command -v ddate > /dev/null 2>&1 ; then
+    echo "Date: $CLBLUE$(ddate)$CLRESET"
+  else
+    echo "Date: $CLBLUE$(date)$CLRESET"
+  fi
+
+  echo "Pretty-printing json with: $CLGREEN$jsonpp$CLRESET"
+
+  if [ "x$RESUME" = "x" ] ; then
+    echo "Target server $CLMAGENTA$URL$CLRESET, sourcing words from $CLMAGENTA$DICTFILE$CLRESET"
+  else
+    echo "Target server $CLMAGENTA$URL$CLRESET, resuming game $CLBLUE$RESUME$CLRESET"
+  fi
 fi
 
 echo ""
