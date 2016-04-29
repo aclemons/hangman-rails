@@ -33,14 +33,17 @@ Connect to a remote hangman server like this:
 Environment variables affect how the script runs:
   DICTFILE - dictionary file containing words - default /usr/share/dict/words
   URL      - url of the remote server - default http://localhost:3000
+  RESUME   - id of the game to resume
 
 Options mirror the environment variables above:
   --dict-file - same as DICTFILE
   --url       - same as URL
+  --resume    - same as RESUME
 
 Examples
   URL=http://10.43.0.13:3000 ./cli.sh
   ./cli.sh --url http://10.43.0.13:3000 --dict-file /tmp/words
+  ./cli.sh --url http://10.43.0.13:3000 --resume 18272
 
 Requirements:
 posix compliant sh
@@ -92,6 +95,22 @@ while [ 0 ]; do
     URL="$1"
 
     shift
+  elif [ "x$1" = "x--resume" ]; then
+    shift
+
+    if [ "x$1" = "x" ]; then
+      echo >&2 "--resume requires an argument."
+      exit 1
+    fi
+
+    RESUME="$1"
+
+    if case "$RESUME" in ''|*[!0-9]*) true ;; *) false ;; esac ; then
+      echo >&2 "--resume requires a numeric argument."
+      exit 1
+    fi
+
+    shift
   elif [ "x$1" = "x" ]; then
     break
   else
@@ -104,6 +123,7 @@ jsonpp=""
 if echo "{}" | python -c 'import sys, json;' > /dev/null 2>&1 ; then
   jsonpp='python -c "import sys, json; data = sys.stdin.read(); print json.dumps(json.loads(data), sort_keys=True, indent=4, separators=('\'','\'', '\'': '\''))"'
 elif echo "{}" | perl -0007 -MJSON -ne 'from_json($_, {allow_nonref => 1})' > /dev/null 2>&1 ; then
+  # shellcheck disable=SC2016
   jsonpp='perl -0007 -MJSON -ne '\''print to_json(from_json($_, {allow_nonref => 1}), {pretty => 1})."\n"'\'''
 elif command -v json_reformat > /dev/null 2>&1 ; then
   jsonpp="json_reformat"
@@ -118,21 +138,51 @@ CLBLUE=$(printf '\033[34m')
 CLMAGENTA=$(printf '\033[35m')
 CLRESET=$(printf '\033[0m')
 
-DICTFILE=${DICTFILE:-/usr/share/dict/words}
-
-if [ ! -e "$DICTFILE" ] ; then
-  echo >&2 "File $DICTFILE does not exist"
-  exit 1
-fi
-
 URL=${URL:-http://localhost:3000}
 
-max="$(wc -l < "$DICTFILE")"
-num="$(awk -v min=1 -v max="$max" 'BEGIN{ srand(); print int(min + rand() * (max - min + 1)) }')"
-word="$(sed "$(printf "%s" "$num")q;d" "$DICTFILE")"
+echo "Welcome to $CLBLUE""HANGMAN$CLRESET"
+echo ""
 
-gameurl="$(curl -f -v -H "Accept: application/json" "$URL/games" --data game[lives]=7 --data game[word]="$word" -o /dev/null 2>&1 | tr -d '\r' | grep ocation | cut -d' ' -f3)"
-game_id="$(echo "$gameurl" | sed 's#.*/\([[:digit:]][[:digit:]]*\)#\1#')"
+if command -v ddate > /dev/null 2>&1 ; then
+  echo "Date: $CLBLUE$(ddate)$CLRESET"
+else
+  echo "Date: $CLBLUE$(date)$CLRESET"
+fi
+
+echo "Pretty-printing json with: $CLGREEN$jsonpp$CLRESET"
+
+if [ "x$RESUME" = "x" ] ; then
+  DICTFILE=${DICTFILE:-/usr/share/dict/words}
+
+  if [ ! -e "$DICTFILE" ] ; then
+    echo >&2 "File $DICTFILE does not exist"
+    exit 1
+  fi
+
+  echo "Target server $CLMAGENTA$URL$CLRESET, sourcing words from $CLMAGENTA$DICTFILE$CLRESET"
+else
+  echo "Target server $CLMAGENTA$URL$CLRESET, resuming game $CLBLUE$RESUME$CLRESET"
+fi
+
+echo ""
+echo "Press enter to continue"
+read -r ignored
+
+if [ "x$RESUME" = "x" ] ; then
+
+  max="$(wc -l < "$DICTFILE")"
+  num="$(awk -v min=1 -v max="$max" 'BEGIN{ srand(); print int(min + rand() * (max - min + 1)) }')"
+  word="$(sed "$(printf "%s" "$num")q;d" "$DICTFILE")"
+
+  gameurl="$(curl -f -v -H "Accept: application/json" "$URL/games" --data game[lives]=7 --data game[word]="$word" -o /dev/null 2>&1 | tr -d '\r' | grep ocation | cut -d' ' -f3)"
+  gameid="$(echo "$gameurl" | sed 's#.*/\([[:digit:]][[:digit:]]*\)#\1#')"
+else
+  gameid="$RESUME"
+  gameurl="$URL/games/$RESUME"
+
+  data="$(curl -f -s -H "Accept: application/json" "$gameurl" | tr -d '\r' | eval $jsonpp | sed 's/ : /: /')"
+  word="$(echo "$data" | grep "word" | sed -e 's/^[ \t]*//' -e 's/,//g' | cut -d' ' -f2)"
+fi
 
 error=""
 # shellcheck disable=SC2159
@@ -140,7 +190,7 @@ while [ 0 ] ; do
 
   printf "\033[2J\033[1;1H"
 
-  data="$(curl -s -H "Accept: application/json" "$gameurl" | tr -d '\r' | eval $jsonpp | sed 's/ : /: /')"
+  data="$(curl -f -s -H "Accept: application/json" "$gameurl" | tr -d '\r' | eval $jsonpp | sed 's/ : /: /')"
   lives="$(echo "$data" | grep "lives_remaining" | sed -e 's/^[ \t]*//' -e 's/,//g' | cut -d' ' -f2)"
   gstatus="$(echo "$data" | grep "status" | sed -e 's/^[ \t]*//' -e 's/,//g' | cut -d' ' -f2)"
 
@@ -154,6 +204,7 @@ while [ 0 ] ; do
   guessed_letters="[ $(printf "%s" "$letters" | tr '\n' ' ') ]"
 
   if [ "$gstatus" -eq 2 ] ; then
+    echo "Game: $gameid"
     echo "$CLRED""Game over!$CLRESET"
     echo "Word was $CLBLUE$word$CLRESET"
     echo ""
@@ -163,6 +214,7 @@ while [ 0 ] ; do
   fi
 
   if [ "$gstatus" -eq 3 ] ; then
+    echo "Game: $gameid"
     echo "$CLGREEN""You won!$CLRESET"
     echo "Word was $CLBLUE$word$CLRESET"
     echo ""
@@ -180,8 +232,10 @@ while [ 0 ] ; do
     echo "$CLMAGENTA$error$CLRESET"
   fi
 
+  echo "Game: $gameid"
   echo "You have $CLBLUE$lives$CLRESET lives left"
 
+  # shellcheck disable=SC1004
   echo "$word" | sed -e 's/\(.\)/\1\
 /g' | while read -r letter ; do
     upletter="$(echo "$letter" | tr '[:lower:]' '[:upper:]')"
@@ -213,7 +267,7 @@ while [ 0 ] ; do
     continue
   fi
 
-  response="$(curl -v -H "Accept: application/json" "$URL/guesses" --data "game_id=$game_id" --data "guess[letter]=$letter" 2> /dev/null | tr -d '\r')"
+  response="$(curl -v -H "Accept: application/json" "$URL/guesses" --data "game_id=$gameid" --data "guess[letter]=$letter" 2> /dev/null | tr -d '\r')"
 
   if echo "$response" | grep "HTTP/1.1 201 Created" > /dev/null 2>&1 ; then
     continue
