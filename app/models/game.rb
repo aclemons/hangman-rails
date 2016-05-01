@@ -40,7 +40,7 @@ class Game < ActiveRecord::Base
 
   def solved_char_status
     # returns [ true, false, false ] etc
-    word.upcase.chars.to_a.map do |c|
+    word.upcase.chars.map do |c|
       guesses.any? { |guess| guess.letter == c }
     end
   end

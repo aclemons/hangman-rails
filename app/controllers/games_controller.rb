@@ -24,6 +24,7 @@ class GamesController < ApplicationController
     filtering_params.each do |key, value|
       @games = @games.public_send("with_#{key}", value) if value.present?
     end
+
     @games = @games.paginate(page: params[:page]).order('created_at ASC')
 
     respond_to do |format|
