@@ -35,13 +35,14 @@ Environment variables affect how the script runs:
   URL      - url of the remote server - default http://localhost:3000
   RESUME   - id of the game to resume
   VERBOSE  - verbose output on start
+  COLOURS  - enabled|disable colours - default yes
 
 Options mirror the environment variables above:
   --dict-file - same as DICTFILE
   --url       - same as URL
   --resume    - same as RESUME
   --verbose   - same as VERBOSE=yes
-  --no-colour - disable colours
+  --no-colour - same as COULOURS=no
 
 Examples
   URL=http://10.43.0.13:3000 ./cli.sh
@@ -65,12 +66,6 @@ Exit codes:
 
 EOF
 }
-
-CLRED=$(printf '\033[31m')
-CLGREEN=$(printf '\033[32m')
-CLBLUE=$(printf '\033[34m')
-CLMAGENTA=$(printf '\033[35m')
-CLRESET=$(printf '\033[0m')
 
 # shellcheck disable=SC2159
 while [ 0 ]; do
@@ -127,11 +122,7 @@ while [ 0 ]; do
   elif [ "x$1" = "x--no-colour" ] || [ "x$1" = "x--no-color" ] ; then
     shift
 
-    CLRED=""
-    CLGREEN=""
-    CLBLUE=""
-    CLMAGENTA=""
-    CLRESET=""
+    COLOURS=no
 
   elif [ "x$1" = "x" ]; then
     break
@@ -154,6 +145,21 @@ else
 fi
 
 VERBOSE=${VERBOSE:-no}
+COLOURS=${COLOURS:-yes}
+
+if [ "x$COLOURS" = "xyes" ] || [ "x$COLOURS" = "xtrue" ] || [ "x$COLOURS" = "x1" ] ; then
+  CLRED=$(printf '\033[31m')
+  CLGREEN=$(printf '\033[32m')
+  CLBLUE=$(printf '\033[34m')
+  CLMAGENTA=$(printf '\033[35m')
+  CLRESET=$(printf '\033[0m')
+else
+  CLRED=""
+  CLGREEN=""
+  CLBLUE=""
+  CLMAGENTA=""
+  CLRESET=""
+fi
 
 URL=${URL:-http://localhost:3000}
 
@@ -271,7 +277,7 @@ while [ 0 ] ; do
 /g' | while read -r letter ; do
     upletter="$(echo "$letter" | tr '[:lower:]' '[:upper:]')"
     if echo "$letters" | grep "$upletter" > /dev/null 2>&1 ; then
-      printf "%s" "$CLGREEN$letter$CLRESET "
+      printf "%s " "$CLGREEN$letter$CLRESET"
     else
       printf "_ "
     fi
@@ -301,6 +307,7 @@ while [ 0 ] ; do
   response="$(curl -v -H "Accept: application/json" "$URL/guesses" --data "game_id=$gameid" --data "guess[letter]=$letter" 2> /dev/null | tr -d '\r')"
 
   if echo "$response" | grep "HTTP/1.1 201 Created" > /dev/null 2>&1 ; then
+    error=""
     continue
   fi
 
