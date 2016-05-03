@@ -30,24 +30,17 @@ class GuessesController < ApplicationController
     else
       flash[:danger] = @make_guess.errors.keys.map { |k| "#{k}: #{@make_guess.errors[k].to_sentence}"}.to_sentence
 
-      if @make_guess.game
-        respond_to do |format|
-          format.html { redirect_to Game.find(params[:game_id]) }
-          format.json { render json: @make_guess.errors, status: :bad_request }
-        end
-      else
-        respond_to do |format|
-          format.html { render :games }
-          format.json { render json: @make_guess.errors, status: :not_found }
-        end
+      respond_to do |format|
+        format.html { redirect_to Game.find(params[:game_id]) }
+        format.json { render json: @make_guess.errors, status: :bad_request }
       end
     end
   end
 
   private
 
-    def guess_params
-      params.require(:guess).permit(:letter)
-    end
+  def guess_params
+    params.require(:guess).permit(:letter)
+  end
 
 end

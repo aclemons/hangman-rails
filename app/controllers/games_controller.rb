@@ -64,12 +64,12 @@ class GamesController < ApplicationController
 
   private
 
-    def user_params
-      params.require(:game).permit(:lives, :word)
-    end
+  def user_params
+    params.require(:game).permit(:lives, :word)
+  end
 
-    def filtering_params
-      params.slice(:game_status_id)
-    end
+  def filtering_params
+    params.slice(:game_status_id)
+  end
 
 end

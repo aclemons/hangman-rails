@@ -21,6 +21,8 @@
 class ApplicationController < ActionController::Base
   include HttpAcceptLanguage::AutoLocale
 
+  rescue_from ActiveRecord::RecordNotFound, :with => :not_found
+
   protect_from_forgery
   skip_before_action :verify_authenticity_token, if: :json_request?
 
@@ -44,6 +46,13 @@ class ApplicationController < ActionController::Base
       headers["Link"] = page.each_with_object([]) do |(k, v), links|
         new_request_hash = request_params.merge({ :page => v })
         links << "<#{url_without_params}?#{new_request_hash.to_param}>; rel=\"#{k}\""
-      end.join(", ")
+      end.join(", ").strip
+    end
+
+    def not_found
+      respond_to do |format|
+        format.html { render :file => File.join(Rails.root, 'public', '404.html') }
+        format.json { render json: "{}", status: :bad_request }
+      end
     end
 end
