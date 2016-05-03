@@ -32,7 +32,7 @@ class MakeGuess
     begin
       Game.transaction do
 
-        @game = Game.find(id: game_id)
+        @game = Game.find(game_id)
 
         if game.game_over?
           errors.add(MakeGuess.human_attribute_name(:state), I18n.t("GAME_ALREADY_OVER", { :game_id => game_id.to_s }))
