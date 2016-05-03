@@ -54,9 +54,10 @@ posix compliant sh
 awk
 sed
 curl
-python - first choice for pretty printing json
-perl-JSON - fallback if python cannot be used to pretty print json
-yajl - fallback  if neither python or perl-JSON are available to pretty-print json (json_reformat)
+ruby - first choice for pretty printing json
+perl-JSON - fallback if ruby cannot be used to pretty print json
+python - fallback if neither ruby nor perl-JSON is available to pretty-print json
+yajl - fallback  if neither ruby, perl-JSON, nor python is available to pretty-print json (json_reformat)
 
 Exit codes:
 0 - Won
@@ -132,7 +133,9 @@ while [ 0 ]; do
   fi
 done
 
-if python -c 'import sys, json;' > /dev/null 2>&1 ; then
+if ruby -e "require 'json'" > /dev/null 2>&1 ; then
+  jsonpp='ruby -e "require'\''json'\''; puts JSON.pretty_generate(JSON(STDIN.read))"'
+elif python -c 'import sys, json;' > /dev/null 2>&1 ; then
   jsonpp='python -c "import sys, json; data = sys.stdin.read(); print json.dumps(json.loads(data), sort_keys=True, indent=4, separators=('\'','\'', '\'': '\''))"'
 elif perl -0007 -MJSON -e '' > /dev/null 2>&1 ; then
   # shellcheck disable=SC2016
