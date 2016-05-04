@@ -31,7 +31,6 @@ class MakeGuess
   def call
     begin
       Game.transaction do
-
         @game = Game.find(game_id)
 
         if game.over?
@@ -41,15 +40,15 @@ class MakeGuess
 
         @guess = game.guesses.create(letter: letter)
 
-        if !guess.valid?
+        unless guess.valid?
           guess.errors.each { |attribute, error| errors.add(attribute, error) }
 
           raise ActiveRecord::Rollback
         end
 
-        game.update_game_status!
+        game.update_status!
 
-        if !game.save
+        unless game.save
           game.errors.each { |attribute, error| errors.add(attribute, error) }
           raise ActiveRecord::Rollback
         end
@@ -60,7 +59,6 @@ class MakeGuess
       errors.add(MakeGuess.human_attribute_name(:letter), I18n.t("LETTER_ALREADY_USED", { :letter => letter.to_s }))
     end
 
-    return false
+    false
   end
-
 end

@@ -19,10 +19,9 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 class Game < ActiveRecord::Base
-
   DEFAULT_LIVES = 7
 
-  scope :with_game_status_id, -> (status) { where game_status_id: status }
+  scope :with_game_status_id, -> (status) { where game_status: status }
 
   before_save { self.game_status_id = GameStatus::STATUS_NEW unless self.game_status_id }
   validates :word, presence: true, length: { minimum: 3, maximum: 50 }
@@ -42,7 +41,7 @@ class Game < ActiveRecord::Base
 
   def solved_char_status
     # returns [ true, false, false ] etc
-    word.upcase.chars.map do |c|
+    upcase_chars.map do |c|
       guesses.any? { |guess| guess.letter == c }
     end
   end
@@ -51,22 +50,31 @@ class Game < ActiveRecord::Base
     lives_left <= 0
   end
 
-  def wrong_guess_count
-    chars = word.upcase.chars
-    guesses.reject { |guess| chars.include?(guess.letter) }.count
-  end
-
   def lives_left
     lives - wrong_guess_count
   end
 
-  def update_game_status!
-    self.game_status_id = if won?
-                       GameStatus::STATUS_WON
-                     elsif lost?
-                       GameStatus::STATUS_LOST
-                     else
-                       GameStatus::STATUS_IN_PROGRESS
-                     end
+  def update_status!
+    self.game_status_id =calculate_new_status
+  end
+
+  private
+
+  def wrong_guess_count
+    guesses.reject { |guess| upcase_chars.include?(guess.letter) }.count
+  end
+
+  def upcase_chars
+    @upcase_chars ||= word.upcase.chars
+  end
+
+  def calculate_new_status
+    if won?
+      GameStatus::STATUS_WON
+    elsif lost?
+      GameStatus::STATUS_LOST
+    else
+      GameStatus::STATUS_IN_PROGRESS
+    end
   end
 end

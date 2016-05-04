@@ -58,12 +58,10 @@ RSpec.describe MakeGuess do
         expect(game.lives_left).to eq 1
         expect(game.solved_char_status).to eq [ false, false, false, false ]
         expect(game.game_status_id).to eq GameStatus::STATUS_IN_PROGRESS
-
       end
     end
 
     describe "during a game" do
-
       let(:initial_lives) { 1 }
       let(:initial_status) { GameStatus::STATUS_IN_PROGRESS }
 
@@ -85,7 +83,6 @@ RSpec.describe MakeGuess do
         expect(game.lives_left).to eq 1
         expect(game.solved_char_status).to eq [ true, true, true, true ]
         expect(game.game_status_id).to eq GameStatus::STATUS_WON
-
       end
 
       it "a wrong guess with 1 life left ends the game" do
@@ -123,7 +120,6 @@ RSpec.describe MakeGuess do
         expect(game.lives_left).to eq 1
         expect(game.solved_char_status).to eq [ false, false, false, false ]
         expect(game.game_status_id).to eq GameStatus::STATUS_IN_PROGRESS
-
       end
 
       it "rejects already used letter" do
@@ -145,12 +141,10 @@ RSpec.describe MakeGuess do
         expect(game.lives_left).to eq 1
         expect(game.solved_char_status).to eq [ false, false, false, false ]
         expect(game.game_status_id).to eq GameStatus::STATUS_IN_PROGRESS
-
       end
     end
 
     describe "game is over" do
-
       let(:initial_lives) { 1 }
       let(:initial_status) { GameStatus::STATUS_IN_PROGRESS }
 
@@ -168,7 +162,6 @@ RSpec.describe MakeGuess do
         expect(game.lives_left).to eq 0
         expect(game.solved_char_status).to eq [ false, false, false, false ]
         expect(game.game_status_id).to eq GameStatus::STATUS_LOST
-
       end
     end
   end

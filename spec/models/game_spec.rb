@@ -37,9 +37,8 @@ RSpec.describe Game, type: :model do
   end
 
   context "playing game" do
-
     before do
-      game.save
+      game.save!
 
       guesses.each {|g| game.guesses.create!({ letter: g }) }
     end
@@ -101,6 +100,5 @@ RSpec.describe Game, type: :model do
         expect(game.solved_char_status).to eq [ true, true, true, true ]
       end
     end
-
   end
 end

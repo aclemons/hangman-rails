@@ -21,6 +21,7 @@
 class GamesController < ApplicationController
   def index
     @games = Game.where(nil)
+
     filtering_params.each do |key, value|
       @games = @games.public_send("with_#{key}", value) if value.present?
     end
@@ -79,5 +80,4 @@ class GamesController < ApplicationController
   def filtering_params
     params.slice(:game_status_id)
   end
-
 end

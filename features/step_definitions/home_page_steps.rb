@@ -57,7 +57,6 @@ Then(/^I can view the game help$/) do
 end
 
 Then(/^I can create a random game$/) do
-
   click_link('Create Game')
 
   fill_in('game[lives]', :with => 4)

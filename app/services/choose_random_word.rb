@@ -22,11 +22,13 @@ class ChooseRandomWord
   attr_reader :word
 
   def call
-    lines = IO.readlines(ENV["HANGMAN_WORD_LIST"])
-
     @word = lines.sample.chomp.strip
+  end
 
-    return true
+  private
+
+  def lines
+    @@lines ||= IO.readlines(ENV["HANGMAN_WORD_LIST"])
   end
 end
 

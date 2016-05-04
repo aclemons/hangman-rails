@@ -21,7 +21,6 @@
 require 'rails_helper'
 
 RSpec.describe GameStatus, type: :model do
-
   let(:game_status) { GameStatus.new(id: 1, name: 'Test') }
 
   context "#valid?" do

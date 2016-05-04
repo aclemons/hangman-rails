@@ -21,7 +21,6 @@
 require 'rails_helper'
 
 RSpec.describe GamesController, type: :controller do
-
   context "#index" do
     describe "GET index" do
       it "assigns @games" do
@@ -38,7 +37,6 @@ RSpec.describe GamesController, type: :controller do
 
   context "#create" do
     describe "POST create" do
-
       it "renders the game template" do
         post :create, game: { lives: 4, word: 'timmi' }
         expect(assigns(:game)).to be_truthy
@@ -80,5 +78,4 @@ RSpec.describe GamesController, type: :controller do
       end
     end
   end
-
 end
