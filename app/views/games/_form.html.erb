@@ -1,7 +1,7 @@
 <%= form_for(@game) do |f| %>
   <%= render 'shared/error_messages', object: @game %>
 
-  <%= f.label :word %>
+  <%= f.label :word %> <%= t('WORD_OPTIONAL') %>
   <%= f.text_field :word, class: 'form-control' %>
 
   <%= f.label :lives %>

@@ -20,6 +20,8 @@
 #
 class Game < ActiveRecord::Base
 
+  DEFAULT_LIVES = 7
+
   scope :with_game_status_id, -> (status) { where game_status_id: status }
 
   before_save { self.game_status_id = GameStatus::STATUS_NEW unless self.game_status_id }

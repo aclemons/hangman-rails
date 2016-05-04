@@ -31,3 +31,14 @@ module HmRails
     config.action_view.embed_authenticity_token_in_remote_forms = true
   end
 end
+
+if ENV["HANGMAN_WORD_LIST"]
+  error_msg = "Invalid word list location #{ENV["HANGMAN_WORD_LIST"]}"
+else
+  ENV["HANGMAN_WORD_LIST"] = "/usr/share/dict/words"
+
+  error_msg = "Please supply the word list location with the ENV variable 'HANGMAN_WORD_LIST'"
+end
+
+raise error_msg unless File.exist?(ENV["HANGMAN_WORD_LIST"]) and File.readable?(ENV["HANGMAN_WORD_LIST"])
+

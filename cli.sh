@@ -31,18 +31,18 @@ Connect to a remote hangman server like this:
   cli.sh
 
 Environment variables affect how the script runs:
-  DICTFILE - dictionary file containing words - default /usr/share/dict/words
   URL      - url of the remote server - default http://localhost:3000
   RESUME   - id of the game to resume
   VERBOSE  - verbose output on start
   COLOURS  - enabled|disable colours - default yes
+  LIVES    - number of lives to use - default 7
 
 Options mirror the environment variables above:
-  --dict-file - same as DICTFILE
   --url       - same as URL
   --resume    - same as RESUME
   --verbose   - same as VERBOSE=yes
   --no-colour - same as COULOURS=no
+  --lives     - same as LIVES=x
 
 Examples
   URL=http://10.43.0.13:3000 ./cli.sh
@@ -73,22 +73,7 @@ while [ 0 ]; do
   if [ "x$1" = "x-h" ] || [ "x$1" = "x-help" ] || [ "x$1" = "x--help" ]; then
     usage | less -F -X
     exit 0
-  elif [ "x$1" = "x--dict-file" ]; then
-    shift
 
-    if [ "x$1" = "x" ]; then
-      echo >&2 "--dict-file requires an argument."
-      exit 1
-    fi
-
-    DICTFILE="$1"
-
-    if [ ! -e "$DICTFILE" ] ; then
-      echo >&2 "File $DICTFILE does not exist"
-      exit 1
-    fi
-
-    shift
   elif [ "x$1" = "x--url" ]; then
     shift
 
@@ -112,6 +97,22 @@ while [ 0 ]; do
 
     if case "$RESUME" in ''|*[!0-9]*) true ;; *) false ;; esac ; then
       echo >&2 "--resume requires a numeric argument."
+      exit 1
+    fi
+
+    shift
+  elif [ "x$1" = "x--lives" ]; then
+    shift
+
+    if [ "x$1" = "x" ]; then
+      echo >&2 "--lives requires an argument."
+      exit 1
+    fi
+
+    LIVES="$1"
+
+    if case "$LIVES" in ''|*[!0-9]*) true ;; *) false ;; esac ; then
+      echo >&2 "--lives requires a numeric argument."
       exit 1
     fi
 
@@ -166,15 +167,6 @@ fi
 
 URL=${URL:-http://localhost:3000}
 
-if [ "x$RESUME" = "x" ] ; then
-  DICTFILE=${DICTFILE:-/usr/share/dict/words}
-
-  if [ ! -e "$DICTFILE" ] ; then
-    echo >&2 "File $DICTFILE does not exist"
-    exit 1
-  fi
-fi
-
 echo "Welcome to $CLBLUE""HANGMAN$CLRESET"
 echo ""
 
@@ -188,7 +180,7 @@ if [ "x$VERBOSE" = "xyes" ] || [ "x$VERBOSE" = "xtrue" ] || [ "x$VERBOSE" = "x1"
   echo "Pretty-printing json with: $CLGREEN$jsonpp$CLRESET"
 
   if [ "x$RESUME" = "x" ] ; then
-    echo "Target server $CLMAGENTA$URL$CLRESET, sourcing words from $CLMAGENTA$DICTFILE$CLRESET"
+    echo "Target server $CLMAGENTA$URL$CLRESET"
   else
     echo "Target server $CLMAGENTA$URL$CLRESET, resuming game $CLBLUE$RESUME$CLRESET"
   fi
@@ -200,28 +192,19 @@ echo "Press enter to continue"
 read -r ignored
 
 if [ "x$RESUME" = "x" ] ; then
+  LIVES=${LIVES:-7}
 
-  max="$(wc -l < "$DICTFILE")"
-
-  # shellcheck disable=SC2159
-  while [ 0 ] ; do
-    num="$(awk -v min=1 -v max="$max" 'BEGIN{ srand(); print int(min + rand() * (max - min + 1)) }')"
-    word="$(sed "$(printf "%s" "$num")q;d" "$DICTFILE")"
-    wlength="$(printf "%s" "$word" | wc -m)"
-
-    if [ "$wlength" -ge 3 ] || [ "$wlength" -le 50 ] ; then
-      break
-    fi
-  done
-
-  gameurl="$(curl -f -v -H "Accept: application/json" "$URL/games" --data game[lives]=7 --data game[word]="$word" -o /dev/null 2>&1 | tr -d '\r' | grep ocation | cut -d' ' -f3)"
+  gameurl="$(curl -f -v -H "Accept: application/json" "$URL/games" --data game[lives]="$LIVES" -o /dev/null 2>&1 | tr -d '\r' | grep ocation | cut -d' ' -f3)"
   gameid="$(echo "$gameurl" | sed 's#.*/\([[:digit:]][[:digit:]]*\)#\1#')"
+
+  data="$(curl -f -s -H "Accept: application/json" "$gameurl" | tr -d '\r' | eval $jsonpp | sed 's/ : /: /')"
+  word="$(echo "$data" | grep "word" | sed -e 's/^[ \t]*//' -e 's/,//g' -e 's/"//g' | cut -d' ' -f2)"
 else
   gameid="$RESUME"
   gameurl="$URL/games/$RESUME"
 
   data="$(curl -f -s -H "Accept: application/json" "$gameurl" | tr -d '\r' | eval $jsonpp | sed 's/ : /: /')"
-  word="$(echo "$data" | grep "word" | sed -e 's/^[ \t]*//' -e 's/,//g' | cut -d' ' -f2)"
+  word="$(echo "$data" | grep "word" | sed -e 's/^[ \t]*//' -e 's/,//g' -e 's/"//g'| cut -d' ' -f2)"
 fi
 
 error=""
