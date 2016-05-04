@@ -66,9 +66,9 @@ RSpec.describe MakeGuess do
       let(:initial_status) { GameStatus::STATUS_IN_PROGRESS }
 
       it "solving the word wins the game" do
-        game.guesses.create(letter: "R")
-        game.guesses.create(letter: "U")
-        game.guesses.create(letter: "B")
+        game.guesses.create!(letter: "R")
+        game.guesses.create!(letter: "U")
+        game.guesses.create!(letter: "B")
 
         make_guess = MakeGuess.new(id, 'y')
 
@@ -85,16 +85,16 @@ RSpec.describe MakeGuess do
         expect(game.game_status_id).to eq GameStatus::STATUS_WON
       end
 
-      it "a wrong guess with 1 life left ends the game" do
-        game.guesses.create(letter: "X")
+      it "rejects guesses for a game which is already over" do
+        game.guesses.create!(letter: "X")
         game.game_status_id = GameStatus::STATUS_LOST
-        game.save
+        game.save!
 
         make_guess = MakeGuess.new(id, 'K')
 
         expect(make_guess.call).to be_falsey
 
-        expect(make_guess.errors.any?).to be_truthy
+        expect(make_guess.errors.any?).to be_falsey
 
         game = Game.find(id)
 
@@ -124,9 +124,9 @@ RSpec.describe MakeGuess do
 
       it "rejects already used letter" do
         game.lives = 2
-        game.save
+        game.save!
 
-        game.guesses.create(letter: "T")
+        game.guesses.create!(letter: "T")
 
         make_guess = MakeGuess.new(id, 'T')
 

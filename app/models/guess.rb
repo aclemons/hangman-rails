@@ -19,10 +19,13 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 class Guess < ActiveRecord::Base
-  before_save { self.letter = letter.upcase }
   belongs_to :game
+
   default_scope -> { order(created_at: :asc) }
 
+  before_validation { self.letter = letter.upcase }
+
   validates :letter, presence: true, length: { maximum: 1 },
-                     format: { with: /\A[[:alpha:]]\z/}
+                     format: { with: /\A[[:alpha:]]\z/},
+                     uniqueness: { scope: [:game_id] }
 end

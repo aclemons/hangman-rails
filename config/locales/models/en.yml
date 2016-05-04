@@ -13,4 +13,3 @@ en:
         letter:
           one: "Letter"
           other: "Letters"
-  INVALID_GAME_STATUS_ID: Invalid game status id. Must be %{valid_range}

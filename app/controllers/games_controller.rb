@@ -78,6 +78,6 @@ class GamesController < ApplicationController
   end
 
   def filtering_params
-    params.slice(:game_status_id)
+    params.slice(:game_status)
   end
 end

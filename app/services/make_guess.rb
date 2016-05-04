@@ -19,47 +19,32 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 class MakeGuess
-  extend ActiveModel::Translation
-
   attr_reader :errors, :game, :guess, :letter, :game_id
 
   def initialize(game_id, letter)
     @game_id, @letter = game_id, letter
+
+    # errors on a PORO
+    # as documentation at http://api.rubyonrails.org/classes/ActiveModel/Errors.html
     @errors = ActiveModel::Errors.new(self)
   end
 
   def call
-    begin
-      Game.transaction do
-        @game = Game.find(game_id)
+    Game.transaction do
+      @game = Game.lock(true).find(game_id)
 
-        if game.over?
-          errors.add(MakeGuess.human_attribute_name(:state), I18n.t("GAME_ALREADY_OVER", { :game_id => game_id.to_s }))
-          raise ActiveRecord::Rollback
-        end
+      return false if game.over?
 
-        @guess = game.guesses.create(letter: letter)
+      @guess = game.guesses.create(letter: letter)
 
-        unless guess.valid?
-          copy_errors(guess)
+      copy_errors(guess) && (return false) unless guess.valid?
 
-          return false
-        end
+      game.update_status!
 
-        game.update_status!
-
-        unless game.save
-          copy_errors(game)
-          return false
-        end
-
-        return true
-      end
-    rescue ActiveRecord::RecordNotUnique => e
-      errors.add(MakeGuess.human_attribute_name(:letter), I18n.t("LETTER_ALREADY_USED", { :letter => letter.to_s }))
+      copy_errors(game) && (return false) unless game.save
     end
 
-    false
+    true
   end
 
   private

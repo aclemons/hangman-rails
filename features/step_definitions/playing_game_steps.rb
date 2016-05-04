@@ -97,7 +97,7 @@ When(/^I guess a duplicate letter$/) do
 end
 
 Then(/^I am notified that the letter has already been used$/) do
-  expect(page).to have_content("Letter 'r' has already been used")
+  expect(page).to have_content("letter: has already been taken")
 end
 
 When(/^I guess a non\-letter$/) do

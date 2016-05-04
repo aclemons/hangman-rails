@@ -23,7 +23,7 @@ class Game < ActiveRecord::Base
 
   scope :with_game_status, -> (status) { where game_status: status }
 
-  before_save { self.game_status_id = GameStatus::STATUS_NEW unless self.game_status_id }
+  before_validation { self.game_status_id = GameStatus::STATUS_NEW unless self.game_status_id }
   validates :word, presence: true, length: { minimum: 3, maximum: 50 }
   validates :lives, presence: true, :numericality => { :greater_than_or_equal_to => 1 }
   validates :game_status_id, presence: true
@@ -55,7 +55,7 @@ class Game < ActiveRecord::Base
   end
 
   def update_status!
-    self.game_status_id = calculate_new_status
+    self.game_status_id = calculate_status
   end
 
   private
@@ -68,7 +68,7 @@ class Game < ActiveRecord::Base
     @upcase_chars ||= word.upcase.chars
   end
 
-  def calculate_new_status
+  def calculate_status
     if won?
       GameStatus::STATUS_WON
     elsif lost?
