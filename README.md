@@ -4,17 +4,12 @@ This is a simple implementation of the game hangman as a Rails app.
 
 ## Installation
 
-This requires ruby and the ruby gem `bundler`.
-
-* Slackware
-
-        # sbopkg -i ruby-bundler
-
-* Others TODO
+This requires `ruby` (tested with `ruby 2.2.5p319`) and the ruby gem `bundler` (tested with `1.12.1`).
 
 After cloning this repo run:
 
-        $ bundle install --path vendor/bundle
+        $ gem install -i vendor/bundle -v 1.12.1 bundler
+        $ ./bin/bundle install --path vendor/bundle
 
 ## Configuration
 
