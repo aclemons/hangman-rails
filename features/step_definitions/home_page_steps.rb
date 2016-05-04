@@ -56,3 +56,14 @@ Then(/^I can view the game help$/) do
   expect(page).to have_content("Background information on hangman")
 end
 
+Then(/^I can create a random game$/) do
+
+  click_link('Create Game')
+
+  fill_in('game[lives]', :with => 4)
+
+  click_button('Save')
+
+  expect(page).to have_content("[  ]")
+  expect(page).to have_content("You have 4 lives left:")
+end
