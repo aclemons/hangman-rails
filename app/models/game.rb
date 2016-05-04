@@ -33,7 +33,7 @@ class Game < ActiveRecord::Base
   belongs_to :game_status
 
   def over?
-    won? or lost?
+    won? || lost?
   end
 
   def won?

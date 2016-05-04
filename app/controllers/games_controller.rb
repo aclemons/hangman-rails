@@ -49,7 +49,7 @@ class GamesController < ApplicationController
   def create
     @game = Game.new(user_params.merge(game_status_id: GameStatus::STATUS_NEW))
 
-    if @game.word.nil? or @game.word.empty?
+    if @game.word.nil? || @game.word.empty?
       choose_random_word = ChooseRandomWord.new
 
       if choose_random_word.call
