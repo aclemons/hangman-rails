@@ -196,16 +196,13 @@ if [ "x$RESUME" = "x" ] ; then
 
   gameurl="$(curl -f -v -H "Accept: application/json" "$URL/games" --data game[lives]="$LIVES" -o /dev/null 2>&1 | tr -d '\r' | grep ocation | cut -d' ' -f3)"
   gameid="$(echo "$gameurl" | sed 's#.*/\([[:digit:]][[:digit:]]*\)#\1#')"
-
-  data="$(curl -f -s -H "Accept: application/json" "$gameurl" | tr -d '\r' | eval $jsonpp | sed 's/ : /: /')"
-  word="$(echo "$data" | grep "word" | sed -e 's/^[ \t]*//' -e 's/,//g' -e 's/"//g' | cut -d' ' -f2)"
 else
   gameid="$RESUME"
   gameurl="$URL/games/$RESUME"
-
-  data="$(curl -f -s -H "Accept: application/json" "$gameurl" | tr -d '\r' | eval $jsonpp | sed 's/ : /: /')"
-  word="$(echo "$data" | grep "word" | sed -e 's/^[ \t]*//' -e 's/,//g' -e 's/"//g'| cut -d' ' -f2)"
 fi
+
+data="$(curl -f -s -H "Accept: application/json" "$gameurl" | tr -d '\r' | eval $jsonpp | sed 's/ : /: /')"
+word="$(echo "$data" | grep "word" | sed -e 's/^[ \t]*//' -e 's/,//g' -e 's/"//g' | cut -d' ' -f2)"
 
 error=""
 # shellcheck disable=SC2159
