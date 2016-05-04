@@ -24,6 +24,10 @@ adapt this for your PostgreSQL instance. To get started quickly, you can
 comment out the PostgreSQL development database in the file, and restore the  
 sqlite values.
 
+Then to initialise the database:
+
+        $ ./bin/rake db:migrate RAILS_ENV=development
+
 ## Running
 
 To start the server in development mode:
