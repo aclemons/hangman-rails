@@ -25,7 +25,7 @@ RSpec.describe Game, type: :model do
 
   context "#initialize" do
     it "initial game is not over" do
-      expect(game.game_over?).to be_falsey
+      expect(game.over?).to be_falsey
       expect(game.won?).to be_falsey
       expect(game.lost?).to be_falsey
 
@@ -49,7 +49,7 @@ RSpec.describe Game, type: :model do
 
       it "has correct state " do
 
-        expect(game.game_over?).to be_falsey
+        expect(game.over?).to be_falsey
         expect(game.won?).to be_falsey
         expect(game.lost?).to be_falsey
 
@@ -63,7 +63,7 @@ RSpec.describe Game, type: :model do
       let(:guesses) { ['R'] }
 
       it "has correct state" do
-        expect(game.game_over?).to be_falsey
+        expect(game.over?).to be_falsey
         expect(game.won?).to be_falsey
         expect(game.lost?).to be_falsey
 
@@ -78,7 +78,7 @@ RSpec.describe Game, type: :model do
 
       it "is over" do
 
-        expect(game.game_over?).to be_truthy
+        expect(game.over?).to be_truthy
         expect(game.won?).to be_falsey
         expect(game.lost?).to be_truthy
 
@@ -92,7 +92,7 @@ RSpec.describe Game, type: :model do
       let(:guesses) { ['R', 'U', 'B', 'Y'] }
 
       it "is won" do
-        expect(game.game_over?).to be_truthy
+        expect(game.over?).to be_truthy
         expect(game.won?).to be_truthy
         expect(game.lost?).to be_falsey
 

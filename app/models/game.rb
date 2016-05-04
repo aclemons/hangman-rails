@@ -32,7 +32,7 @@ class Game < ActiveRecord::Base
   has_many   :guesses
   belongs_to :game_status
 
-  def game_over?
+  def over?
     won? or lost?
   end
 

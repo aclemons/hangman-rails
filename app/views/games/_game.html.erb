@@ -2,5 +2,5 @@
   <td><%= game.id %></td>
   <td><%= t("STATUS_#{game.game_status_id}") %></td>
   <td><%= game.lives_left.to_s %></td>
-  <td><%= game.game_over? ? (link_to t("SHOW_GAME_LINK"), game) : (link_to t("RESUME_GAME_LINK"), game) %></td>
+  <td><%= game.over? ? (link_to t("SHOW_GAME_LINK"), game) : (link_to t("RESUME_GAME_LINK"), game) %></td>
 </tr>

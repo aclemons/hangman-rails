@@ -34,7 +34,7 @@ class MakeGuess
 
         @game = Game.find(game_id)
 
-        if game.game_over?
+        if game.over?
           errors.add(MakeGuess.human_attribute_name(:state), I18n.t("GAME_ALREADY_OVER", { :game_id => game_id.to_s }))
           raise ActiveRecord::Rollback
         end
