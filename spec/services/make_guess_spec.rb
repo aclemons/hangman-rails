@@ -34,10 +34,7 @@ RSpec.describe MakeGuess do
   context "#new" do
     it "rejects an unknown game" do
       make_guess = MakeGuess.new(-1, 'k')
-
-      expect(make_guess.call).to be_falsey
-      expect(make_guess.errors.any?).to be_truthy
-
+      expect { make_guess.call }.to raise_error(ActiveRecord::RecordNotFound)
     end
   end
 
