@@ -41,16 +41,16 @@ class MakeGuess
         @guess = game.guesses.create(letter: letter)
 
         unless guess.valid?
-          guess.errors.each { |attribute, error| errors.add(attribute, error) }
+          copy_errors(guess)
 
-          raise ActiveRecord::Rollback
+          return false
         end
 
         game.update_status!
 
         unless game.save
-          game.errors.each { |attribute, error| errors.add(attribute, error) }
-          raise ActiveRecord::Rollback
+          copy_errors(game)
+          return false
         end
 
         return true
@@ -60,5 +60,11 @@ class MakeGuess
     end
 
     false
+  end
+
+  private
+
+  def copy_errors(source)
+    source.errors.each { |attribute, error| errors.add(attribute, error) }
   end
 end

@@ -21,7 +21,7 @@
 class Game < ActiveRecord::Base
   DEFAULT_LIVES = 7
 
-  scope :with_game_status_id, -> (status) { where game_status: status }
+  scope :with_game_status, -> (status) { where game_status: status }
 
   before_save { self.game_status_id = GameStatus::STATUS_NEW unless self.game_status_id }
   validates :word, presence: true, length: { minimum: 3, maximum: 50 }
@@ -55,7 +55,7 @@ class Game < ActiveRecord::Base
   end
 
   def update_status!
-    self.game_status_id =calculate_new_status
+    self.game_status_id = calculate_new_status
   end
 
   private

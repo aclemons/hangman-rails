@@ -46,7 +46,7 @@ class ApplicationController < ActionController::Base
     headers["Link"] = page.each_with_object([]) do |(k, v), links|
       new_request_hash = request_params.merge({ :page => v })
       links << "<#{url_without_params}?#{new_request_hash.to_param}>; rel=\"#{k}\""
-    end.join(", ").strip
+    end.join(", ")
   end
 
   def not_found
