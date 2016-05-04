@@ -51,7 +51,6 @@ Examples
 
 Requirements:
 posix compliant sh
-awk
 sed
 curl
 ruby - first choice for pretty printing json
