@@ -20,6 +20,7 @@ group :development, :test do
   gem 'web-console', '2.0.0.beta3'
   gem 'spring',      '1.1.3'
   gem 'rspec-rails', '~> 3.0'
+  gem 'fuubar',      '2.0.0'
 end
 
 group :test do

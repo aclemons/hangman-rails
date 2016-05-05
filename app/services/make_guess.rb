@@ -25,7 +25,7 @@ class MakeGuess
     @game_id, @letter = game_id, letter
 
     # errors on a PORO
-    # as documentation at http://api.rubyonrails.org/classes/ActiveModel/Errors.html
+    # per documentation at http://api.rubyonrails.org/classes/ActiveModel/Errors.html
     @errors = ActiveModel::Errors.new(self)
   end
 
