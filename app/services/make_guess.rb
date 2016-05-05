@@ -13,15 +13,25 @@ class MakeGuess
     Game.transaction do
       @game = Game.lock(true).find(game_id)
 
-      return false if game.over?
+      if game.over?
+        errors.add(Game.model_name.human, I18n.t("GAME_ALREADY_OVER", { :game_id => game_id.to_s }))
+
+        return false
+      end
 
       @guess = game.guesses.create(letter: letter)
 
-      copy_errors(guess) && (return false) unless guess.valid?
+      unless guess.valid?
+        copy_errors(guess)
+        return false
+      end
 
       game.update_status!
 
-      copy_errors(game) && (return false) unless game.save
+      unless game.save!
+        copy_errors(game)
+        return false
+      end
     end
 
     true

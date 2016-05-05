@@ -75,7 +75,7 @@ RSpec.describe MakeGuess do
 
         expect(make_guess.call).to be_falsey
 
-        expect(make_guess.errors.any?).to be_falsey
+        expect(make_guess.errors.any?).to be_truthy
 
         game = Game.find(id)
 
